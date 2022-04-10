@@ -1,0 +1,69 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: api with table and layer
+
+Globals:
+  Function:
+    Timeout: 5
+    Layers:
+      - !Ref DependencyLayer
+
+Parameters:
+  Stage:
+    Type: String
+    Default: dev
+
+Resources:
+  BackendApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Ref Stage
+      EndpointConfiguration: REGIONAL
+  
+  MainFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: myapp/
+      Handler: app.main_handler
+      Runtime: python3.9
+      Timeout: 10
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          TABLE: !Ref MainTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref MainTable
+      Events:
+        hello:
+          Type: Api
+          Properties:
+            Path: /api/hello
+            Method: GET
+            RestApiId: !Ref BackendApi
+
+  MainTable:
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      AttributeDefinitions: 
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: time
+          AttributeType: N
+      BillingMode: PAY_PER_REQUEST 
+      KeySchema: 
+        - AttributeName: id
+          KeyType: HASH
+        - AttributeName: time
+          KeyType: RANGE
+      TableName: !Sub '${Stage}-main-table'
+
+  DependencyLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      ContentUri: ./
+      CompatibleRuntimes:
+        - python3.9
+    Metadata:
+      BuildMethod: makefile
