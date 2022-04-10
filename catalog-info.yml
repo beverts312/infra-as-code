@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: Infra as Code
+  description: Reference IaC templates
+  annotations:
+    github.com/project-slug: beverts312/infra-as-code
+spec:
+  type: lib
+  lifecycle: production
+  owner: starlord
