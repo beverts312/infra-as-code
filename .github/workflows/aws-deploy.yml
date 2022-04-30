@@ -23,4 +23,4 @@ jobs:
 
       - name: Copy files to the test website with the AWS CLI
         run: |
-          aws s3 sync ./aws s3://${{ secrets.S3_BUCKET_NAME }}
+          aws s3 sync ./aws s3://${{ secrets.S3_BUCKET_NAME }} --acl public-read

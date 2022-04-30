@@ -66,3 +66,7 @@ Resources:
         ViewerCertificate:
           AcmCertificateArn: !Ref CertificateArn
           SslSupportMethod: sni-only
+
+Outputs:
+  CloudfrontDomain:
+    Value: !GetAtt WebAppCloudFrontDistribution.DomainName
