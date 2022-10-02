@@ -1,0 +1,65 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Route 53 Redirect
+
+Globals:
+  Function:
+    Timeout: 5
+
+Parameters:
+  Stage:
+    Type: String
+    Default: dev
+    Description: Stage name for API gateway
+  FromDomain:
+    Type: String
+    Description: Domain to redirect from, e.g. old.example.com
+  FromDomainHostedZoneId:
+    Type: String
+    Description: Hosted zone ID for the domain to redirect from
+  ToUrl:
+    Type: String
+    Description: URL to redirect to, e.g. https://new.example.com
+
+Resources:
+  GatewayCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref FromDomain
+      DomainValidationOptions:
+        - DomainName: !Ref FromDomain
+          HostedZoneId: !Ref FromDomainHostedZoneId
+      ValidationMethod: DNS
+
+  ApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Ref Stage
+      EndpointConfiguration: REGIONAL
+      Domain:
+        DomainName: !Ref FromDomain
+        CertificateArn: !Ref GatewayCertificate
+        EndpointConfiguration: REGIONAL
+        Route53:
+          HostedZoneId: !Ref FromDomainHostedZoneId
+
+  RedirectFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: main.redirect_request
+      Runtime: python3.9
+      Timeout: 10
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          TO_URL: !Ref ToUrl
+      Events:
+        redirect:
+          Type: Api
+          Properties:
+            Path: /
+            Method: GET
+            RestApiId: !Ref ApiGateway
+            
