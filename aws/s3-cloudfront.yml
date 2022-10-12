@@ -5,8 +5,8 @@ Parameters:
   DomainName:
     Description: Domain to add as alias to Cloudfront Distribution
     Type: String
-  CertificateArn:
-    Description: ARN of certificate to attach to cloudfront
+  HostedZoneId:
+    Description: Hosted zone ID for your domain
     Type: String
 
 Resources:
@@ -64,8 +64,27 @@ Resources:
               Forward: none
           ViewerProtocolPolicy: redirect-to-https
         ViewerCertificate:
-          AcmCertificateArn: !Ref CertificateArn
+          AcmCertificateArn: !Ref DistributionCertificate
           SslSupportMethod: sni-only
+
+  DistributionCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref DomainName
+      DomainValidationOptions:
+        - DomainName: !Ref DomainName
+          HostedZoneId: !Ref HostedZoneId
+      ValidationMethod: DNS
+
+  DNS:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZoneId 
+      Name: !Ref DomainName
+      Type: A
+      AliasTarget:
+        HostedZoneId: Z2FDTNDATAQYW2
+        DNSName: !GetAtt WebAppCloudFrontDistribution.DomainName
 
 Outputs:
   CloudfrontDomain:
