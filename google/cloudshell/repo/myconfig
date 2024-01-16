@@ -1,0 +1,7 @@
+export WORK_HOME=$HOME/dev
+export WORK_ORG=beverts312
+export GITHUB_USERNAME=beverts312
+export DEV_HOME=$WORK_HOME
+export DEV_ENV_HOME=$HOME/dev-env
+
+source $DEV_ENV_HOME/.bash_profile

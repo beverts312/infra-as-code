@@ -1,0 +1,6 @@
+#!/bin/bash
+git init
+git add cloudbuild.yaml Dockerfile .cloudshellcustomimagerepo.json
+git commit -m "chore: init repo"
+git remote add origin ssh://${user}@source.developers.google.com:2022/p/${project_id}/r/${name}
+git push -u origin master
