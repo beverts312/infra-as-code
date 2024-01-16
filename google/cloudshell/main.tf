@@ -9,6 +9,16 @@ resource "google_sourcerepo_repository_iam_member" "member" {
   member     = "user:${var.user}"
 }
 
+resource "google_cloudbuild_trigger" "filename-trigger" {
+  location = var.region
+  trigger_template {
+    branch_name = "main"
+    repo_name   = google_sourcerepo_repository.repository.name
+  }
+
+  filename = "cloudbuild.yaml"
+}
+
 resource "local_file" "custom_image_repo_json" {
   content = templatefile(
     "${path.module}/repo/cloudshellcustomimagerepo.json.tftpl",
