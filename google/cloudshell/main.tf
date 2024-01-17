@@ -11,12 +11,13 @@ resource "google_sourcerepo_repository_iam_member" "member" {
 
 resource "google_cloudbuild_trigger" "filename-trigger" {
   location = var.region
+
   trigger_template {
-    branch_name = "main"
+    branch_name = var.project_id
     repo_name   = google_sourcerepo_repository.repository.name
   }
 
-  filename = "cloudbuild.yaml"
+  filename = "Dockerfile"
 }
 
 resource "local_file" "custom_image_repo_json" {
