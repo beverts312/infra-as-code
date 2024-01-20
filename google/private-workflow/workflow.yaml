@@ -1,0 +1,7 @@
+- call_function:
+    call: http.get
+    args:
+      url: ${sys.get_env("url")}
+    result: resp
+- returnOutput:
+    return: ${resp.body}
