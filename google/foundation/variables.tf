@@ -26,7 +26,12 @@ variable "prod_projects" {
       name = string
       cidr = string
       region = string
+      secondary_ranges = list(object({
+        name = string
+        cidr = string
+      }))
     }))
+    enabled_apis = list(string)
   }))
 }
 
@@ -38,7 +43,12 @@ variable "nonprod_projects" {
       name = string
       cidr = string
       region = string
+      secondary_ranges = list(object({
+        name = string
+        cidr = string
+      }))
     }))
+    enabled_apis = list(string)
   }))
 }
 
@@ -50,7 +60,12 @@ variable "core_project" {
       name = string
       cidr = string
       region = string
+      secondary_ranges = list(object({
+        name = string
+        cidr = string
+      }))
     }))
+    enabled_apis = list(string)
   })
 }
 

@@ -9,17 +9,7 @@ module "core-project" {
 
   billing_account = var.billing_account
 
-  activate_apis = [
-    "cloudidentity.googleapis.com",
-    "compute.googleapis.com",
-    "container.googleapis.com",
-    "iam.googleapis.com",
-    "logging.googleapis.com",
-    "monitoring.googleapis.com",
-    "servicenetworking.googleapis.com",
-    "storage-api.googleapis.com",
-    "storage-component.googleapis.com",
-  ]
+  activate_apis = var.core_project.enabled_apis
 }
 
 module "prod-projects" {
@@ -35,8 +25,8 @@ module "prod-projects" {
   billing_account = var.billing_account
 
   shared_vpc = module.shared-vpc.project_id
-  shared_vpc_subnets = [for subnet in each.value.subnets : module.shared-vpc.subnets["${subnet.region}/${each.key}-${subnet.name}-pd"].self_link]
   domain = data.google_organization.org.domain
+  activate_apis = each.value.enabled_apis
 }
 
 module "nonprod-projects" {
@@ -52,6 +42,5 @@ module "nonprod-projects" {
   billing_account = var.billing_account
 
   shared_vpc = module.shared-vpc.project_id
-  shared_vpc_subnets = [for subnet in each.value.subnets : module.shared-vpc.subnets["${subnet.region}/${each.key}-${subnet.name}-np"].self_link]
-  domain = data.google_organization.org.domain
+  activate_apis = each.value.enabled_apis
 }
