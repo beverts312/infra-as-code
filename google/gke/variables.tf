@@ -21,3 +21,7 @@ variable "subnetwork" {
 variable "vpc_project_id" {
   type = string
 }
+
+variable "domain" {
+  type = string
+}
